@@ -1,24 +1,39 @@
-import React from 'react'
+import React, { useState } from 'react'
 
 export default function Navbar() {
+  let [settingData, setSettingData] = useState({
+    siteName: import.meta.env.VITE_APP_SITE_NAME,
+    map1: import.meta.env.VITE_APP_MAP1,
+    address: import.meta.env.VITE_APP_ADDRESS,
+    email: import.meta.env.VITE_APP_EMAIL,
+    phone: import.meta.env.VITE_APP_PHONE,
+    whatsapp: import.meta.env.VITE_APP_WHATSAPP,
+    facebook: import.meta.env.VITE_APP_FACEBOOK,
+    twitter: import.meta.env.VITE_APP_TWITTER,
+    instagram: import.meta.env.VITE_APP_INSTAGRM,
+    linkedin: import.meta.env.VITE_APP_LINKEDIN,
+    youtube: import.meta.env.VITE_APP_YOUTUBE,
+  })
   return (
     <>
-      <div className="container-fluid topbar bg-secondary d-none d-xl-block w-100">
+      <div className="container-fluid topbar bg-secondary w-100">
         <div className="container">
           <div className="row gx-0 align-items-center" style={{ height: "45px" }}>
-            <div className="col-lg-6 text-center text-lg-start mb-lg-0">
+            <div className="col-lg-9 col-6 text-center text-lg-start mb-lg-0">
               <div className="d-flex flex-wrap">
-                <a href="#" className="text-muted me-4"><i className="fas fa-map-marker-alt text-primary me-2"></i>Find A Location</a>
-                <a href="tel:+01234567890" className="text-muted me-4"><i className="fas fa-phone-alt text-primary me-2"></i>+01234567890</a>
-                <a href="mailto:example@gmail.com" className="text-muted me-0"><i className="fas fa-envelope text-primary me-2"></i>Example@gmail.com</a>
+                <a href={settingData.map1} target='_blank' className="text-light me-2"><i className="fas fa-map-marker-alt text-light me-2"></i><span className='d-none d-xl-inline'>{settingData.address}</span></a>
+                <a href={`mailto:${settingData.email}`} className="text-light me-2"><i className="fas fa-envelope text-light me-2"></i><span className='d-none d-xl-inline'>{settingData.email}</span></a>
+                <a href={`tel:${settingData.phone}`} className="text-light me-2"><i className="fas fa-phone-alt text-light me-2"></i><span className='d-none d-xl-inline'>{settingData.phone}</span></a>
+                <a href={`https://wa.me/${settingData.whatsapp}`} className="text-light me-2"><i className="bi bi-whatsapp text-light me-2"></i><span className='d-none d-xl-inline'>{settingData.whatsapp}</span></a>
               </div>
             </div>
-            <div className="col-lg-6 text-center text-lg-end">
+            <div className="col-lg-3 col-6 text-center text-lg-end">
               <div className="d-flex align-items-center justify-content-end">
-                <a href="#" className="btn btn-light btn-sm-square rounded-circle me-3"><i className="fab fa-facebook-f"></i></a>
-                <a href="#" className="btn btn-light btn-sm-square rounded-circle me-3"><i className="fab fa-twitter"></i></a>
-                <a href="#" className="btn btn-light btn-sm-square rounded-circle me-3"><i className="fab fa-instagram"></i></a>
-                <a href="#" className="btn btn-light btn-sm-square rounded-circle me-0"><i className="fab fa-linkedin-in"></i></a>
+                <a href={settingData.facebook} target='_blank' className="text-light  me-3"><i className="fab fa-facebook-f"></i></a>
+                <a href={settingData.twitter} target='_blank' className="text-light  me-3"><i className="fab fa-twitter"></i></a>
+                <a href={settingData.instagram} target='_blank' className="text-light  me-3"><i className="fab fa-instagram"></i></a>
+                <a href={settingData.linkedin} target='_blank' className="text-light  me-3"><i className="fab fa-linkedin-in"></i></a>
+                <a href={settingData.youtube} target='_blank' className="text-light  me-3"><i className="fab fa-youtube"></i></a>
               </div>
             </div>
           </div>
