@@ -42,7 +42,7 @@ export default function Navbar() {
       </div>
 
       <div className="container-fluid nav-bar sticky-top px-0 px-lg-4 py-2 py-lg-0">
-        <div className="container">
+        <div className="container-fluid">
           <nav className="navbar navbar-expand-lg navbar-light">
             <Link to="/" className="navbar-brand p-0">
               <h1 className="display-6 text-primary"><i className="fas fa-car-alt me-3"></i>{settingData.siteName}</h1>
@@ -60,6 +60,7 @@ export default function Navbar() {
                 <NavLink to="/faq" className="nav-item nav-link">Faq</NavLink>
                 <NavLink to="/testimonial" className="nav-item nav-link">Testimonial</NavLink>
                 <NavLink to="/contact" className="nav-item nav-link">ContactUs</NavLink>
+                <NavLink to="/admin" className="nav-item nav-link">Admin</NavLink>
 
                 <div className="nav-item dropdown">
                   <a href="#" className="nav-link dropdown-toggle" data-bs-toggle="dropdown">Nitin Chauhan</a>
