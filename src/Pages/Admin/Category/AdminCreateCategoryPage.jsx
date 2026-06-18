@@ -18,9 +18,9 @@ export default function AdminCreateCategoryPage() {
 
   function getInputData(e) {
     let name = e.target.name
-    let value = name === "pic" ? e.target.files[0].name : e.target.value
+    let value = name === "pic" ? "category/" + e.target.files[0].name : e.target.value
     // let value = name === "pic" ? e.target.files[0] : e.target.value
-    
+
     setData({ ...data, [name]: name === "status" ? (value === "1" ? true : false) : value })
     setErrorMessage({ ...errorMessage, [name]: name === "pic" ? ImageValidators(e) : TextValidators(e) })
   }
