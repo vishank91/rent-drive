@@ -1,9 +1,13 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
+
 import AdminSidebar from '../../../Components/Admin/AdminSidebar'
-import { Link } from 'react-router-dom'
+
 import ImageValidators from '../../../FormValidators/ImageValidators'
 import TextValidators from '../../../FormValidators/TextValidators'
 
+import { getCategory, createCategory } from "../../../Redux/ActionCreators/CategoryActionCreators"
 export default function AdminCreateCategoryPage() {
   let [data, setData] = useState({
     name: '',
@@ -15,6 +19,11 @@ export default function AdminCreateCategoryPage() {
     pic: 'Pic Field is Mendatory'
   })
   let [show, setShow] = useState(false)
+
+  let CategoryStateData = useSelector(state => state.CategoryStateData)
+  let dispatch = useDispatch()
+
+  let navigate = useNavigate()
 
   function getInputData(e) {
     let name = e.target.name
@@ -30,13 +39,28 @@ export default function AdminCreateCategoryPage() {
     if (error)
       setShow(true)
     else {
-      alert(`
-        Name : ${data.name}
-        Pic : ${data.pic}
-        Status : ${data.status}
-        `)
+      let item = CategoryStateData.find(x => x.name?.toLocaleLowerCase() === data.name?.toLocaleLowerCase())
+      if (item) {
+        setShow(true)
+        setErrorMessage({ ...errorMessage, name: "Category With This Name Already Exist" })
+        return
+      }
+
+      dispatch(createCategory({ ...data }))
+
+      // let formData = new FormData()
+      // formData.append("name",data.name)
+      // formData.append("pic",data.pic)
+      // formData.append("status",data.status)
+      // dispatch(createCategory(formData))
+
+      navigate("/admin/category")
     }
   }
+
+  useEffect(() => {
+    dispatch(getCategory())
+  }, [CategoryStateData.length])
   return (
     <>
       <div className="container-fluid">
