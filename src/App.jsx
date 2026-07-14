@@ -31,6 +31,14 @@ import AdminFeaturePage from './Pages/Admin/Feature/AdminFeaturePage'
 import AdminCreateFeaturePage from './Pages/Admin/Feature/AdminCreateFeaturePage'
 import AdminUpdateFeaturePage from './Pages/Admin/Feature/AdminUpdateFeaturePage'
 
+import AdminServicePage from './Pages/Admin/Service/AdminServicePage'
+import AdminCreateServicePage from './Pages/Admin/Service/AdminCreateServicePage'
+import AdminUpdateServicePage from './Pages/Admin/Service/AdminUpdateServicePage'
+
+import AdminFaqPage from './Pages/Admin/Faq/AdminFaqPage'
+import AdminCreateFaqPage from './Pages/Admin/Faq/AdminCreateFaqPage'
+import AdminUpdateFaqPage from './Pages/Admin/Faq/AdminUpdateFaqPage'
+
 export default function App() {
     return (
         <BrowserRouter>
@@ -61,6 +69,14 @@ export default function App() {
                 <Route path='/admin/feature' element={<AdminFeaturePage />} />
                 <Route path='/admin/feature/create' element={<AdminCreateFeaturePage />} />
                 <Route path='/admin/feature/update/:id' element={<AdminUpdateFeaturePage />} />
+
+                <Route path='/admin/service' element={<AdminServicePage />} />
+                <Route path='/admin/service/create' element={<AdminCreateServicePage />} />
+                <Route path='/admin/service/update/:id' element={<AdminUpdateServicePage />} />
+
+                <Route path='/admin/faq' element={<AdminFaqPage />} />
+                <Route path='/admin/faq/create' element={<AdminCreateFaqPage />} />
+                <Route path='/admin/faq/update/:id' element={<AdminUpdateFaqPage />} />
 
                 <Route path='/*' element={<ErrorPage />} />
             </Routes>
