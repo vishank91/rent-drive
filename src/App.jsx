@@ -39,6 +39,13 @@ import AdminFaqPage from './Pages/Admin/Faq/AdminFaqPage'
 import AdminCreateFaqPage from './Pages/Admin/Faq/AdminCreateFaqPage'
 import AdminUpdateFaqPage from './Pages/Admin/Faq/AdminUpdateFaqPage'
 
+import AdminSettingPage from './Pages/Admin/Setting/AdminSettingPage'
+
+
+import AdminCarPage from './Pages/Admin/Car/AdminCarPage'
+import AdminCreateCarPage from './Pages/Admin/Car/AdminCreateCarPage'
+import AdminUpdateCarPage from './Pages/Admin/Car/AdminUpdateCarPage'
+
 export default function App() {
     return (
         <BrowserRouter>
@@ -77,6 +84,13 @@ export default function App() {
                 <Route path='/admin/faq' element={<AdminFaqPage />} />
                 <Route path='/admin/faq/create' element={<AdminCreateFaqPage />} />
                 <Route path='/admin/faq/update/:id' element={<AdminUpdateFaqPage />} />
+
+                <Route path='/admin/setting' element={<AdminSettingPage />} />
+
+                <Route path='/admin/car' element={<AdminCarPage />} />
+                <Route path='/admin/car/create' element={<AdminCreateCarPage />} />
+                <Route path='/admin/car/update/:id' element={<AdminUpdateCarPage />} />
+
 
                 <Route path='/*' element={<ErrorPage />} />
             </Routes>
