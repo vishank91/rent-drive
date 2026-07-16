@@ -1,11 +1,19 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import AdminSidebar from '../../../Components/Admin/AdminSidebar'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { ToastContainer, toast } from 'react-toastify';
 
+import RichTextEditor from '../../../rte/RichTextEditor';
+import { createStructuredContent } from '../../../rte/richTextEditorBridge';
+
 import { createSetting, getSetting, updateSetting } from "../../../Redux/ActionCreators/SettingActionCreators"
 export default function AdminSettingPage() {
+  let editorRefPrivacyPolicy = useRef(null)
+  let editorRefDataPolicy = useRef(null)
+  let [privacyPolicy, setPrivacyPolicy] = useState("")
+  let [dataPolicy, setDataPolicy] = useState("")
+
   let [data, setData] = useState({
     siteName: '',
     address: '',
@@ -20,6 +28,21 @@ export default function AdminSettingPage() {
     youtube: '',
   })
 
+  function changePrivacyPolicy(documentModel, nextHtml) {
+    setPrivacyPolicy(nextHtml !== undefined ? nextHtml : renderHTML(documentModel))
+  }
+  function changeDataPolicy(documentModel, nextHtml) {
+    setDataPolicy(nextHtml !== undefined ? nextHtml : renderHTML(documentModel))
+  }
+
+  function handleChangePrivacyPolicy(nextHtml, editor) {
+    changePrivacyPolicy(editor.getJSON(), nextHtml);
+  }
+
+  function handleChangeDataPolicy(nextHtml, editor) {
+    changeDataPolicy(editor.getJSON(), nextHtml);
+  }
+
   function getInputData(e) {
     let { name, value } = e.target
     setData({ ...data, [name]: value })
@@ -27,7 +50,11 @@ export default function AdminSettingPage() {
 
   function postData(e) {
     e.preventDefault()
-    let item = { ...data }
+    let item = {
+      ...data,
+      privacyPolicy: privacyPolicy,
+      dataPolicy: dataPolicy,
+    }
     if (SettingStateData.length)
       dispatch(updateSetting(item))
     else
@@ -39,11 +66,20 @@ export default function AdminSettingPage() {
   let SettingStateData = useSelector(state => state.SettingStateData)
   let dispatch = useDispatch()
 
+
   useEffect(() => {
     (() => {
       dispatch(getSetting())
       if (SettingStateData.length) {
         setData({ ...data, ...SettingStateData[0] })
+        console.log(SettingStateData[0])
+
+        setTimeout(() => {
+          const documentModel1 = createStructuredContent(SettingStateData[0].privacyPolicy ?? "");
+          const documentModel2 = createStructuredContent(SettingStateData[0].dataPolicy ?? "");
+          changePrivacyPolicy(documentModel1, SettingStateData[0].privacyPolicy ?? "");
+          changeDataPolicy(documentModel2, SettingStateData[0].dataPolicy ?? "");
+        }, 500)
       }
     })()
   }, [SettingStateData.length])
@@ -116,14 +152,34 @@ export default function AdminSettingPage() {
                   <input type="url" name="linkedin" value={data.linkedin} onChange={getInputData} placeholder='Linkedin Profile Page Url' className='form-control border-primary' />
                 </div>
 
+                <div className='col-12 mb-3'>
+                  <label>Privacy Policy</label>
+                  <RichTextEditor
+                    ref={editorRefPrivacyPolicy}
+                    onChange={handleChangePrivacyPolicy}
+                    className="border border-primary"
+                    value={privacyPolicy}
+                  />
+                </div>
+
+                <div className='col-12 mb-3'>
+                  <label>Data Policy</label>
+                  <RichTextEditor
+                    ref={editorRefDataPolicy}
+                    onChange={handleChangeDataPolicy}
+                    className="border border-primary"
+                    value={dataPolicy}
+                  />
+                </div>
+
                 <div className="col-12">
                   <button type="submit" className='btn btn-primary w-100'>Submit</button>
                 </div>
               </div>
             </form>
           </div>
-        </div>
-      </div>
+        </div >
+      </div >
     </>
   )
 }
