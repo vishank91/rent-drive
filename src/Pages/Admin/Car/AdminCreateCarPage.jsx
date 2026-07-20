@@ -7,30 +7,48 @@ import AdminSidebar from '../../../Components/Admin/AdminSidebar'
 import ImageValidators from '../../../FormValidators/ImageValidators'
 import TextValidators from '../../../FormValidators/TextValidators'
 
-import { getCar, createCar } from "../../../Redux/ActionCreators/CarActionCreators"
+import { createCar } from "../../../Redux/ActionCreators/CarActionCreators"
+import { getCategory } from "../../../Redux/ActionCreators/CategoryActionCreators"
+import { getBrand } from "../../../Redux/ActionCreators/BrandActionCreators"
 export default function AdminCreateCarPage() {
   let [data, setData] = useState({
     name: '',
-    pic: '',
+    registrationNumber: '',
+    drivingMode: 'Manual',
+    driver: false,
+    type: 'CNG',
+    seatingCapacity: '5',
+    category: '',
+    brand: '',
+    baseRentAmount: 0,
+    discount: 0,
+    finalRentAmount: 0,
+    city: "",
+    pic: [],
     status: true
   })
   let [errorMessage, setErrorMessage] = useState({
     name: 'Name Field is Mendatory',
+    registrationNumber: 'Registration Number Field is Mendatory',
+    baseRentAmount: 'Base Rent Amount Field is Mendatory',
+    discount: 'Discount Field is Mendatory',
+    city: 'City Name Field is Mendatory',
     pic: 'Pic Field is Mendatory'
   })
   let [show, setShow] = useState(false)
 
-  let CarStateData = useSelector(state => state.CarStateData)
+  let CategoryStateData = useSelector(state => state.CategoryStateData)
+  let BrandStateData = useSelector(state => state.BrandStateData)
   let dispatch = useDispatch()
 
   let navigate = useNavigate()
 
   function getInputData(e) {
     let name = e.target.name
-    let value = name === "pic" ? "car/" + e.target.files[0].name : e.target.value
-    // let value = name === "pic" ? e.target.files[0] : e.target.value
+    let value = name === "pic" ? Array.from(e.target.files).map(x => "car/" + x.name) : e.target.value
+    // let value = name === "pic" ? e.target.files : e.target.value
 
-    setData({ ...data, [name]: name === "status" ? (value === "1" ? true : false) : value })
+    setData({ ...data, [name]: (name === "status" || name === "driver") ? (value === "1" ? true : false) : value })
     setErrorMessage({ ...errorMessage, [name]: name === "pic" ? ImageValidators(e) : TextValidators(e) })
   }
   function postData(e) {
@@ -39,12 +57,6 @@ export default function AdminCreateCarPage() {
     if (error)
       setShow(true)
     else {
-      let item = CarStateData.find(x => x.name?.toLocaleLowerCase() === data.name?.toLocaleLowerCase())
-      if (item) {
-        setShow(true)
-        setErrorMessage({ ...errorMessage, name: "Car With This Name Already Exist" })
-        return
-      }
 
       dispatch(createCar({ ...data }))
 
@@ -59,8 +71,13 @@ export default function AdminCreateCarPage() {
   }
 
   useEffect(() => {
-    dispatch(getCar())
-  }, [CarStateData.length])
+    dispatch(getCategory())
+  }, [CategoryStateData.length])
+
+  useEffect(() => {
+    dispatch(getBrand())
+  }, [BrandStateData.length])
+
   return (
     <>
       <div className="container-fluid">
@@ -74,19 +91,100 @@ export default function AdminCreateCarPage() {
             </h5>
             <form onSubmit={postData}>
               <div className="row">
-                <div className="col-12 mb-3">
+                <div className="col-xl-9 col-md-6 mb-3">
                   <label>Name*</label>
                   <input type="text" name="name" onChange={getInputData} placeholder='Car Name' className={`form-control ${show && errorMessage.name ? 'border-danger' : 'border-dark'}`} />
                   {show && errorMessage.name ? <p className='text-danger text-capitalize'>{errorMessage.name}</p> : null}
                 </div>
 
-                <div className="col-md-6 mb-3">
-                  <label>Pic*</label>
-                  <input type="file" name="pic" onChange={getInputData} className={`form-control ${show && errorMessage.pic ? 'border-danger' : 'border-dark'}`} />
-                  {show && errorMessage.pic ? <p className='text-danger text-capitalize'>{errorMessage.pic}</p> : null}
+                <div className="col-xl-3 col-md-6 mb-3">
+                  <label>Registration Number*</label>
+                  <input type="text" name="registrationNumber" onChange={getInputData} placeholder='Registration Number' className={`form-control ${show && errorMessage.registrationNumber ? 'border-danger' : 'border-dark'}`} />
+                  {show && errorMessage.registrationNumber ? <p className='text-danger text-capitalize'>{errorMessage.registrationNumber}</p> : null}
                 </div>
 
                 <div className="col-md-6 mb-3">
+                  <label>Category*</label>
+                  <select name="category" onChange={getInputData} className='form-select border-primary'>
+                    {CategoryStateData.filter(x => x.status).map((item) => {
+                      return <option key={item.id}>{item.name}</option>
+                    })}
+                  </select>
+                </div>
+
+                <div className="col-md-6 mb-3">
+                  <label>Brand*</label>
+                  <select name="brand" onChange={getInputData} className='form-select border-primary'>
+                    {BrandStateData.filter(x => x.status).map((item) => {
+                      return <option key={item.id}>{item.name}</option>
+                    })}
+                  </select>
+                </div>
+
+
+                <div className="col-md-6 mb-3">
+                  <label>Basic Rent Amount Par Day*</label>
+                  <input type="number" name="basicRentAmount" onChange={getInputData} placeholder='Basic Rent Amount Par Day' className={`form-control ${show && errorMessage.basicRentAmount ? 'border-danger' : 'border-dark'}`} />
+                  {show && errorMessage.basicRentAmount ? <p className='text-danger text-capitalize'>{errorMessage.basicRentAmount}</p> : null}
+                </div>
+
+                <div className="col-md-6 mb-3">
+                  <label>Discount*</label>
+                  <input type="number" name="discount" onChange={getInputData} placeholder='Discount' className={`form-control ${show && errorMessage.discount ? 'border-danger' : 'border-dark'}`} />
+                  {show && errorMessage.discount ? <p className='text-danger text-capitalize'>{errorMessage.discount}</p> : null}
+                </div>
+
+                <div className="col-xl-3 col-md-6 mb-3">
+                  <label>Driving Mode*</label>
+                  <select name="drivingMode" onChange={getInputData} className='form-select border-primary'>
+                    <option>Manual</option>
+                    <option>Autometic</option>
+                  </select>
+                </div>
+
+                <div className="col-xl-3 col-md-6 mb-3">
+                  <label>Drive Requied*</label>
+                  <select name="driver" onChange={getInputData} className='form-select border-primary'>
+                    <option value="0">No</option>
+                    <option value="1">Yes</option>
+                  </select>
+                </div>
+
+                <div className="col-xl-3 col-md-6 mb-3">
+                  <label>Seating Capacity*</label>
+                  <select name="seatingCapacity" onChange={getInputData} className='form-select border-primary'>
+                    <option>2</option>
+                    <option>4</option>
+                    <option selected>5</option>
+                    <option>7</option>
+                    <option>11</option>
+                  </select>
+                </div>
+
+                <div className="col-xl-3 col-md-6 mb-3">
+                  <label>Type*</label>
+                  <select name="type" onChange={getInputData} className='form-select border-primary'>
+                    <option>CNG</option>
+                    <option>Petrol</option>
+                    <option>EV</option>
+                    <option>Petrol + Hybrid</option>
+                    <option>Diesel</option>
+                  </select>
+                </div>
+
+                <div className="col-xl-4 col-md-6 mb-3">
+                  <label>Pic*</label>
+                  <input type="file" name="pic" multiple onChange={getInputData} className={`form-control ${show && errorMessage.pic ? 'border-danger' : 'border-dark'}`} />
+                  {show && errorMessage.pic ? <p className='text-danger text-capitalize'>{errorMessage.pic}</p> : null}
+                </div>
+
+                <div className="col-xl-4 col-md-6 mb-3">
+                  <label>City Name*</label>
+                  <input type="text" name="city" onChange={getInputData} placeholder='City Name' className={`form-control ${show && errorMessage.city ? 'border-danger' : 'border-dark'}`} />
+                  {show && errorMessage.city ? <p className='text-danger text-capitalize'>{errorMessage.city}</p> : null}
+                </div>
+
+                <div className="col-xl-4 col-md-6 mb-3">
                   <label>Status*</label>
                   <select name="status" className='form-select border-dark' onChange={getInputData}>
                     <option value="1">Active</option>
