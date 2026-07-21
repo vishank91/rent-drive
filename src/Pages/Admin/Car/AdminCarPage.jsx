@@ -48,6 +48,17 @@ export default function AdminCarPage() {
                   <tr>
                     <th>Id</th>
                     <th>Name</th>
+                    <th>Registration Number</th>
+                    <th>Driving Mode</th>
+                    <th>Driver</th>
+                    <th>Type</th>
+                    <th>Seating Capacity</th>
+                    <th>Category</th>
+                    <th>Brand</th>
+                    <th>Base Rent Amount</th>
+                    <th>Discount</th>
+                    <th>Final Rent Amount</th>
+                    <th>City</th>
                     <th>Pic</th>
                     <th>Status</th>
                     <th></th>
@@ -59,10 +70,25 @@ export default function AdminCarPage() {
                     return <tr key={item.id}>
                       <td>{item.id}</td>
                       <td>{item.name}</td>
+                      <td>{item.registrationNumber}</td>
+                      <td>{item.drivingMode}</td>
+                      <td>{item.driver ? "Yes" : "No"}</td>
+                      <td>{item.type}</td>
+                      <td>{item.seatingCapacity}</td>
+                      <td>{item.category}</td>
+                      <td>{item.brand}</td>
+                      <td>&#8377;{item.baseRentAmount}</td>
+                      <td>{item.discount}% Off</td>
+                      <td>&#8377;{item.finalRentAmount}</td>
+                      <td>{item.city}</td>
                       <td>
-                        <Link to={`${import.meta.env.VITE_APP_IMAGE_SERVER}${item.pic}`} target='_blank'>
-                          <img src={`${import.meta.env.VITE_APP_IMAGE_SERVER}${item.pic}`} height={60} width={100} alt="" />
-                        </Link>
+                        <div style={{ width: 400 }}>
+                          {item.pic.map((pic, index) => {
+                            return <Link to={`${import.meta.env.VITE_APP_IMAGE_SERVER}${pic}`} target='_blank'>
+                              <img src={`${import.meta.env.VITE_APP_IMAGE_SERVER}${pic}`} height={60} width={100} className='m-1' alt="" />
+                            </Link>
+                          })}
+                        </div>
                       </td>
                       <td>{item.status ? "Active" : "Inactive"}</td>
                       <td><Link to={`/admin/car/update/${item.id}`} className='btn btn-primary'><i className='bi bi-pencil-square'></i></Link></td>

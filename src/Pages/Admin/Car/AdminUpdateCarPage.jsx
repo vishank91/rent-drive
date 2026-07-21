@@ -8,29 +8,48 @@ import ImageValidators from '../../../FormValidators/ImageValidators'
 import TextValidators from '../../../FormValidators/TextValidators'
 
 import { getCar, updateCar } from "../../../Redux/ActionCreators/CarActionCreators"
+import { getCategory } from "../../../Redux/ActionCreators/CategoryActionCreators"
+import { getBrand } from "../../../Redux/ActionCreators/BrandActionCreators"
 export default function AdminUpdateCarPage() {
   let { id } = useParams()
 
   let [data, setData] = useState({
     name: '',
-    pic: '',
+    registrationNumber: '',
+    drivingMode: 'Manual',
+    driver: false,
+    type: 'CNG',
+    seatingCapacity: '5',
+    category: '',
+    brand: '',
+    baseRentAmount: 0,
+    discount: 0,
+    finalRentAmount: 0,
+    city: "",
+    pic: [],
     status: true
   })
   let [errorMessage, setErrorMessage] = useState({
     name: '',
+    registrationNumber: '',
+    baseRentAmount: '',
+    discount: '',
+    city: '',
     pic: ''
   })
   let [show, setShow] = useState(false)
 
   let CarStateData = useSelector(state => state.CarStateData)
+  let CategoryStateData = useSelector(state => state.CategoryStateData)
+  let BrandStateData = useSelector(state => state.BrandStateData)
   let dispatch = useDispatch()
 
   let navigate = useNavigate()
 
   function getInputData(e) {
     let name = e.target.name
-    let value = name === "pic" ? "car/" + e.target.files[0].name : e.target.value
-    // let value = name === "pic" ? e.target.files[0] : e.target.value
+    let value = name === "pic" ? data.pic.concat(Array.from(e.target.files).map(x => "car/" + x.name)) : e.target.value
+    // let value = name === "pic" ? e.target.files : e.target.value
 
     setData({ ...data, [name]: name === "status" ? (value === "1" ? true : false) : value })
     setErrorMessage({ ...errorMessage, [name]: name === "pic" ? ImageValidators(e) : TextValidators(e) })
@@ -38,21 +57,39 @@ export default function AdminUpdateCarPage() {
   function postData(e) {
     e.preventDefault()
     let error = Object.values(errorMessage).find(x => x !== "")
+    console.log(error)
     if (error)
       setShow(true)
     else {
-      let item = CarStateData.find(x => x.id !== id && x.name?.toLocaleLowerCase() === data.name?.toLocaleLowerCase())
-      if (item) {
-        setShow(true)
-        setErrorMessage({ ...errorMessage, name: "Car With This Name Already Exist" })
-        return
-      }
-
-      dispatch(updateCar({ ...data }))
+      let bp = parseInt(data.baseRentAmount)
+      let d = parseInt(data.discount)
+      let fp = parseInt(bp - bp * d / 100)
+      dispatch(updateCar({
+        ...data,
+        category: data.category || CategoryStateData[0].name,
+        brand: data.brand || BrandStateData[0].name,
+        baseRentAmount: bp,
+        discount: d,
+        finalRentAmount: fp
+      }))
 
       // let formData = new FormData()
+      // formData.append("_id",data._id)
       // formData.append("name",data.name)
-      // formData.append("pic",data.pic)
+      // formData.append("registrationNumber",data.registrationNumber)
+      // formData.append("drivingMode",data.drivingMode)
+      // formData.append("drive",data.drive)
+      // formData.append("type",data.type)
+      // formData.append("city",data.city)
+      // formData.append("seatingCapacity",data.seatingCapacity)
+      // formData.append("category",data.category||CategoryStateData[0]._id)
+      // formData.append("brand",data.brand||BrandStateData[0]._id)
+      // formData.append("baseRentAmount",bp)
+      // formData.append("discount",d)
+      // formData.append("finalRentAmount",fp)
+      // Array.from(data.pic).forEach(x=>{
+      //   formData.append("pic",x)
+      // })
       // formData.append("status",data.status)
       // dispatch(updateCar(formData))
 
@@ -70,6 +107,14 @@ export default function AdminUpdateCarPage() {
         navigate("/admin/car")
     }
   }, [CarStateData.length])
+
+  useEffect(() => {
+    dispatch(getCategory())
+  }, [CategoryStateData.length])
+
+  useEffect(() => {
+    dispatch(getBrand())
+  }, [BrandStateData.length])
   return (
     <>
       <div className="container-fluid">
@@ -83,18 +128,100 @@ export default function AdminUpdateCarPage() {
             </h5>
             <form onSubmit={postData}>
               <div className="row">
-                <div className="col-12 mb-3">
+                <div className="col-xl-9 col-md-6 mb-3">
                   <label>Name*</label>
                   <input type="text" name="name" value={data.name} onChange={getInputData} placeholder='Car Name' className={`form-control ${show && errorMessage.name ? 'border-danger' : 'border-dark'}`} />
                   {show && errorMessage.name ? <p className='text-danger text-capitalize'>{errorMessage.name}</p> : null}
                 </div>
 
+                <div className="col-xl-3 col-md-6 mb-3">
+                  <label>Registration Number*</label>
+                  <input type="text" name="registrationNumber" value={data.registrationNumber}  onChange={getInputData} placeholder='Registration Number' className={`form-control ${show && errorMessage.registrationNumber ? 'border-danger' : 'border-dark'}`} />
+                  {show && errorMessage.registrationNumber ? <p className='text-danger text-capitalize'>{errorMessage.registrationNumber}</p> : null}
+                </div>
+
                 <div className="col-md-6 mb-3">
-                  <label>Pic</label>
-                  <input type="file" name="pic" onChange={getInputData} className={`form-control ${show && errorMessage.pic ? 'border-danger' : 'border-dark'}`} />
+                  <label>Category*</label>
+                  <select name="category" value={data.category}  onChange={getInputData} className='form-select border-primary'>
+                    {CategoryStateData.filter(x => x.status).map((item) => {
+                      return <option key={item.id}>{item.name}</option>
+                      // return <option key={item.id} value={item._id}>{item.name}</option>
+                    })}
+                  </select>
+                </div>
+
+                <div className="col-md-6 mb-3">
+                  <label>Brand*</label>
+                  <select name="brand" value={data.brand}  onChange={getInputData} className='form-select border-primary'>
+                    {BrandStateData.filter(x => x.status).map((item) => {
+                      return <option key={item.id}>{item.name}</option>
+                      // return <option key={item.id} value={data._id}>{item.name}</option>
+                    })}
+                  </select>
+                </div>
+
+
+                <div className="col-md-6 mb-3">
+                  <label>Base Rent Amount Par Day*</label>
+                  <input type="number" value={data.baseRentAmount}  name="baseRentAmount" onChange={getInputData} placeholder='Basic Rent Amount Par Day' className={`form-control ${show && errorMessage.baseRentAmount ? 'border-danger' : 'border-dark'}`} />
+                  {show && errorMessage.baseRentAmount ? <p className='text-danger text-capitalize'>{errorMessage.baseRentAmount}</p> : null}
+                </div>
+
+                <div className="col-md-6 mb-3">
+                  <label>Discount*</label>
+                  <input type="number" name="discount" value={data.discount}  onChange={getInputData} placeholder='Discount' className={`form-control ${show && errorMessage.discount ? 'border-danger' : 'border-dark'}`} />
+                  {show && errorMessage.discount ? <p className='text-danger text-capitalize'>{errorMessage.discount}</p> : null}
+                </div>
+
+                <div className="col-xl-3 col-md-6 mb-3">
+                  <label>Driving Mode*</label>
+                  <select name="drivingMode" value={data.drivingMode}  onChange={getInputData} className='form-select border-primary'>
+                    <option>Manual</option>
+                    <option>Autometic</option>
+                  </select>
+                </div>
+
+                <div className="col-xl-3 col-md-6 mb-3">
+                  <label>Drive Requied*</label>
+                  <select name="driver" value={data.driver?"1":"0"}  onChange={getInputData} className='form-select border-primary'>
+                    <option value="0">No</option>
+                    <option value="1">Yes</option>
+                  </select>
+                </div>
+
+                <div className="col-xl-3 col-md-6 mb-3">
+                  <label>Seating Capacity*</label>
+                  <select name="seatingCapacity" value={data.seatingCapacity}  onChange={getInputData} className='form-select border-primary'>
+                    <option>2</option>
+                    <option>4</option>
+                    <option>5</option>
+                    <option>7</option>
+                    <option>11</option>
+                  </select>
+                </div>
+
+                <div className="col-xl-3 col-md-6 mb-3">
+                  <label>Type*</label>
+                  <select name="type" value={data.type}  onChange={getInputData} className='form-select border-primary'>
+                    <option>CNG</option>
+                    <option>Petrol</option>
+                    <option>EV</option>
+                    <option>Petrol + Hybrid</option>
+                    <option>Diesel</option>
+                  </select>
+                </div>
+
+                <div className="col-xl-6 col-md-6 mb-3">
+                  <label>Pic*</label>
+                  <input type="file" name="pic" multiple onChange={getInputData} className={`form-control ${show && errorMessage.pic ? 'border-danger' : 'border-dark'}`} />
                   {show && errorMessage.pic ? <p className='text-danger text-capitalize'>{errorMessage.pic}</p> : null}
                 </div>
 
+                <div className="col-xl-6 col-md-6 mb-3">
+                  <label>City Name*</label>
+                  <input type="text" name="city" value={data.city}  onChange={getInputData} placeholder='City Name' className={`form-control ${show && errorMessage.city ? 'border-danger' : 'border-dark'}`} />
+                  {show && errorMessage.city ? <p className='text-danger text-capitalize'>{errorMessage.city}</p> : null}
+                </div>
                 <div className="col-md-6 mb-3">
                   <label>Status*</label>
                   <select name="status" value={data.status ? "1" : "0"} className='form-select border-dark' onChange={getInputData}>

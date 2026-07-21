@@ -54,15 +54,38 @@ export default function AdminCreateCarPage() {
   function postData(e) {
     e.preventDefault()
     let error = Object.values(errorMessage).find(x => x !== "")
+    console.log(error)
     if (error)
       setShow(true)
     else {
-
-      dispatch(createCar({ ...data }))
+      let bp = parseInt(data.baseRentAmount)
+      let d = parseInt(data.discount)
+      let fp = parseInt(bp - bp * d / 100)
+      dispatch(createCar({
+        ...data,
+        category: data.category || CategoryStateData[0].name,
+        brand: data.brand || BrandStateData[0].name,
+        baseRentAmount: bp,
+        discount: d,
+        finalRentAmount: fp
+      }))
 
       // let formData = new FormData()
       // formData.append("name",data.name)
-      // formData.append("pic",data.pic)
+      // formData.append("registrationNumber",data.registrationNumber)
+      // formData.append("drivingMode",data.drivingMode)
+      // formData.append("drive",data.drive)
+      // formData.append("type",data.type)
+      // formData.append("city",data.city)
+      // formData.append("seatingCapacity",data.seatingCapacity)
+      // formData.append("category",data.category||CategoryStateData[0]._id)
+      // formData.append("brand",data.brand||BrandStateData[0]._id)
+      // formData.append("baseRentAmount",bp)
+      // formData.append("discount",d)
+      // formData.append("finalRentAmount",fp)
+      // Array.from(data.pic).forEach(x=>{
+      //   formData.append("pic",x)
+      // })
       // formData.append("status",data.status)
       // dispatch(createCar(formData))
 
@@ -108,6 +131,7 @@ export default function AdminCreateCarPage() {
                   <select name="category" onChange={getInputData} className='form-select border-primary'>
                     {CategoryStateData.filter(x => x.status).map((item) => {
                       return <option key={item.id}>{item.name}</option>
+                      // return <option key={item.id} value={item._id}>{item.name}</option>
                     })}
                   </select>
                 </div>
@@ -117,15 +141,16 @@ export default function AdminCreateCarPage() {
                   <select name="brand" onChange={getInputData} className='form-select border-primary'>
                     {BrandStateData.filter(x => x.status).map((item) => {
                       return <option key={item.id}>{item.name}</option>
+                      // return <option key={item.id} value={data._id}>{item.name}</option>
                     })}
                   </select>
                 </div>
 
 
                 <div className="col-md-6 mb-3">
-                  <label>Basic Rent Amount Par Day*</label>
-                  <input type="number" name="basicRentAmount" onChange={getInputData} placeholder='Basic Rent Amount Par Day' className={`form-control ${show && errorMessage.basicRentAmount ? 'border-danger' : 'border-dark'}`} />
-                  {show && errorMessage.basicRentAmount ? <p className='text-danger text-capitalize'>{errorMessage.basicRentAmount}</p> : null}
+                  <label>Base Rent Amount Par Day*</label>
+                  <input type="number" name="baseRentAmount" onChange={getInputData} placeholder='Basic Rent Amount Par Day' className={`form-control ${show && errorMessage.baseRentAmount ? 'border-danger' : 'border-dark'}`} />
+                  {show && errorMessage.baseRentAmount ? <p className='text-danger text-capitalize'>{errorMessage.baseRentAmount}</p> : null}
                 </div>
 
                 <div className="col-md-6 mb-3">
