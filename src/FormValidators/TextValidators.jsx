@@ -2,7 +2,6 @@ export default function TextValidators(e) {
     let { name, value } = e.target
     switch (name) {
         case 'name':
-        case 'city':
         case 'icon':
             if (!value || value.length === 0)
                 return name + " Field Is Mendatory"
@@ -45,6 +44,7 @@ export default function TextValidators(e) {
                 return ""
 
         case 'question':
+        case 'address':
             if (!value || value.length === 0)
                 return name + " Field Is Mendatory"
             else if (value.length < 20)
